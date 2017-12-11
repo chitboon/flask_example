@@ -41,7 +41,6 @@ def showWebForm():
         # Use 'a' which stands for 'append' if you do not
         # want to override the previous content
         fwrite = open(os.path.join(APP_FILE, "write.txt"), 'r')
-        fwrite = open('C:/Users/CQZ/PycharmProjects/Flask/Sample/Components/file/write.txt', 'w')
         textList = [form.strEg.data+"\n", form.radioEg.data+"\n", form.dropDownBoxEg.data+"\n", form.synopsis.data+"\n"]
         fwrite.writelines(textList)
         fwrite.close()
