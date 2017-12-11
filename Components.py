@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-APP_STATIC = os.path.join(APP_ROOT, 'file')
+APP_FILE = os.path.join(APP_ROOT, 'file')
 
 
 # This class determines the type of fields to be displayed on the web form
@@ -40,6 +40,7 @@ def showWebForm():
         # Store the info in write.txt
         # Use 'a' which stands for 'append' if you do not
         # want to override the previous content
+        fwrite = open(os.path.join(APP_FILE, "write.txt"), 'r')
         fwrite = open('C:/Users/CQZ/PycharmProjects/Flask/Sample/Components/file/write.txt', 'w')
         textList = [form.strEg.data+"\n", form.radioEg.data+"\n", form.dropDownBoxEg.data+"\n", form.synopsis.data+"\n"]
         fwrite.writelines(textList)
@@ -52,7 +53,7 @@ def showWebForm():
         else:
             path = 'readdata2.txt'
 
-        fread = open(os.path.join(APP_STATIC, path), 'r')
+        fread = open(os.path.join(APP_FILE, path), 'r')
         for line in fread:
             readlist.append(line)
         fread.close()
