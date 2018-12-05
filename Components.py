@@ -1,29 +1,29 @@
+# adapted from https://github.com/chualc/Components
+# use shelve instead of files
+
+import shelve
 from flask import Flask, render_template, request
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, validators
-import os
 
 app = Flask(__name__)
-
-APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-APP_FILE = os.path.join(APP_ROOT, 'file')
-
+data = shelve.open('data')
 
 # This class determines the type of fields to be displayed on the web form
 class webComponentsForm(Form):
     # An example of a text box
-    strEg = StringField('A string', [validators.Length(min=1, max=150), validators.DataRequired()])
+    strEg = StringField('Name', [validators.Length(min=1, max=5), validators.DataRequired()])
 
-    # An example of a radio button with 2 choices. The default choice is rChoice1
-    radioEg = RadioField('Eg of Radio Button', choices=[('rChoice1', 'First'), ('rChoice2', 'Second')], default='rChoice1')
+    # An example of a radio button with 2 choices. The default choice is Male
+    radioEg = RadioField('Gender', choices=[('Male', 'Male'), ('Female', 'Female')], default='Male')
 
     # An example of a drop down box with 5 choices
-    dropDownBoxEg = SelectField('Eg of Dropdown Box', [validators.DataRequired()],
-                           choices=[('', 'Select'), ('FANTASY', 'Fantasy'), ('FASHION', 'Fashion'),
-                                    ('THRILLER', 'Thriller'), ('CRIME', 'Crime'), ('BUSINESS', 'Business')],
+    dropDownBoxEg = SelectField('Preferred Language', [validators.DataRequired()],
+                           choices=[('', 'Select'), ('C', 'C'), ('C++', 'C++'),
+                                    ('Python', 'Python'), ('Java', 'Java'), ('Node.js', 'Node.js')],
                            default='')
 
     # An example of a text field
-    synopsis = TextAreaField('Synopsis')
+    synopsis = TextAreaField('Tell us about yourself')
 
 # http://127.0.0.1:5000/ will display home.html
 @app.route('/')
@@ -37,31 +37,15 @@ def home():
 def showWebForm():
     form = webComponentsForm(request.form)
     if request.method == 'POST' and form.validate():
-        # Store the info in write.txt
-        # Use 'a' which stands for 'append' if you do not
-        # want to override the previous content
-        fwrite = open(os.path.join(APP_FILE, "write.txt"), 'r')
-        textList = [form.strEg.data+"\n", form.radioEg.data+"\n", form.dropDownBoxEg.data+"\n", form.synopsis.data+"\n"]
-        fwrite.writelines(textList)
-        fwrite.close()
+        # Store the info persistence storage
 
-        # Read info from either readdata1.txt or readdata2.txt depending on the radio button selected by user
-        readlist = []
-        if form.radioEg.data == 'rChoice1':
-            path = 'readdata1.txt'
-        else:
-            path = 'readdata2.txt'
+        data['info'] =  [form.strEg.data, form.radioEg.data, form.dropDownBoxEg.data, form.synopsis.data]
 
-        fread = open(os.path.join(APP_FILE, path), 'r')
-        for line in fread:
-            readlist.append(line)
-        fread.close()
-
-        return render_template('table.html', readlist=readlist)
+        return render_template('table.html', readlist=data['info'])
 
 
     return render_template('showWebform.html', form=form)
 
 
 if __name__ == '__main__':
-    app.run(port='80')
+    app.run(port='5000')
